@@ -1,74 +1,92 @@
-# Student Submission Checklist (Lab 3)
+# Lab 3: Contextual Bandit–Based News Article Recommendation
 
-Before submitting your Lab 3 assignment, ensure that **all items below are completed**. Submissions that do not follow this checklist may receive partial or no credit.
-
----
-
-## 🔹 Repository and Branching
-
-* [ ] The repository is correctly created on GitHub.
-* [ ] All work is committed to **exactly one branch** named
-  `firstname_U20230xxx`.
-* [ ] **No work is pushed to `master`**.
-* [ ] The correct branch is pushed to GitHub.
+**Course:** Reinforcement Learning Fundamentals  
+**Student:** Arsalaan Alam  
+**Roll Number:** U20230064
 
 ---
 
-## 🔹 Notebook Submission
+## Key Results
 
-* [ ] Exactly **one** Jupyter Notebook (`.ipynb`) is submitted.
-* [ ] The notebook is placed at the **root of the repository**.
-* [ ] The notebook is named **exactly**:
-  `lab3_results_<roll_number>.ipynb`.
-* [ ] The notebook runs **top to bottom without errors**.
-* [ ] All outputs (plots, tables, metrics) are visible in the notebook.
+### Recommendation Engine Demo (first 3 test users)
 
----
+| User   | Predicted context | Selected category | Sampled article (headline) |
+|--------|-------------------|-------------------|----------------------------|
+| U4058  | user_2            | Crime             | Chuck Schumer To Introduce Resolution To Name Senate Buildin... |
+| U1118  | user_1            | Tech              | Alien Space Probes? Physics Paper Considers Craft Other Bein... |
+| U6555  | user_2            | Crime             | The GOP Candidates Are Just A Bunch Of Immature Middle Schoo... |
 
-## 🔹 Sampler Usage
+### Expected reward (final Q) per arm
 
-* [ ] The provided `sampler` package is used **without modification**.
-* [ ] The sampler is initialized using your correct roll number `i`.
-* [ ] Rewards are obtained **only** via `sampler.sample(j)`.
-* [ ] No hard-coded or synthetic rewards are used.
+**Epsilon-Greedy (ε = 0.1):**
 
----
+| Context | Arm 0 (Ent.) | Arm 1 (Edu.) | Arm 2 (Tech) | Arm 3 (Crime) |
+|--------|--------------|--------------|--------------|---------------|
+| User1  | -1.74        | -4.05        | **5.08**     | 2.90          |
+| User2  | -8.43        | -1.29        | 4.45         | **9.22**      |
+| User3  | -1.86        | -3.79        | **9.35**     | -4.34         |
 
-## 🔹 Contextual Bandit Implementation
+**UCB (C = 1.0):**
 
-* [ ] User category is treated as the **context**.
-* [ ] News category is treated as the **bandit arm**.
-* [ ] The arm index mapping follows the specification in the lab handout.
-* [ ] All three algorithms are implemented:
+| Context | Arm 0 (Ent.) | Arm 1 (Edu.) | Arm 2 (Tech) | Arm 3 (Crime) |
+|--------|--------------|--------------|--------------|---------------|
+| User1  | -1.47        | -4.88        | **5.09**     | 3.62          |
+| User2  | -7.92        | -1.20        | 4.96         | **9.21**      |
+| User3  | -3.30        | -3.65        | **9.39**     | -3.98         |
 
-  * Epsilon-Greedy
-  * Upper Confidence Bound (UCB)
-  * SoftMax
+**SoftMax (τ = 1):**
 
----
+| Context | Arm 0 (Ent.) | Arm 1 (Edu.) | Arm 2 (Tech) | Arm 3 (Crime) |
+|--------|--------------|--------------|--------------|---------------|
+| User1  | -3.45        | -3.96        | **5.10**     | 2.78          |
+| User2  | -10.19       | 0.00         | 0.00         | **9.22**      |
+| User3  | 0.00         | -3.50        | **9.35**     | -3.19         |
 
-## 🔹 Evaluation and Plots
-
-* [ ] Classification accuracy is reported on `test_users.csv`.
-* [ ] Reinforcement learning simulation is run for **T = 10,000 steps**.
-* [ ] Plots include:
-
-  * Average Reward vs. Time (per context)
-  * Hyperparameter comparison plots
-* [ ] All plots have labeled axes, legends, and titles.
+(Bold = best arm per context.)
 
 ---
 
-## 🔹 README.md Requirements
+## Final Report: Comparison and Observations
 
-* [ ] README.md is present at the repository root.
-* [ ] It explains the overall approach and design decisions.
-* [ ] It summarizes key results and observations.
-* [ ] It includes clear instructions to reproduce the experiments.
-* [ ] All external references (if any) are properly cited.
+**Comparison of Epsilon-Greedy, UCB, and SoftMax**
+
+- **Epsilon-Greedy** balances exploration (random arm with probability ε) and exploitation (best arm otherwise). It is simple and robust; lower ε (e.g. 0.1) typically yields higher average reward after convergence. The Q values above show clear best arms per context (Tech for User1/User3, Crime for User2).
+- **UCB** selects arms by upper confidence bound Q + C√(ln t / N), so less-tried arms get exploration. It is deterministic and often sample-efficient. The final Q values align closely with Epsilon-Greedy (same best arms: Tech for User1/User3, Crime for User2).
+- **SoftMax** (τ = 1) chooses arms with probability ∝ exp(Q/τ). For User2 and User3 some arms have zero pulls (Q = 0), so exploration was more uneven; best arms still match the other two (Crime for User2, Tech for User3).
+
+**Effect of hyperparameters**
+
+- **ε (Epsilon-Greedy):** Smaller ε (e.g. 0.1) gives higher average reward after convergence; larger ε (0.2, 0.3) explores more and can be noisier. Hyperparameter comparison plots in the notebook show this.
+- **C (UCB):** Moderate C (e.g. 1.0) balances exploration and exploitation; very small C may under-explore, very large C may over-explore. The bar plot in the notebook compares C = 0.5, 1.0, 2.0.
+
+**Strengths and limitations**
+
+- **Epsilon-Greedy:** Easy to implement and tune; exploration is undirected (random).
+- **UCB:** Systematic exploration, often sample-efficient; requires choosing C.
+- **SoftMax:** Smooth policy; can be slower to converge and is sensitive to τ; some arms may be under-sampled (as seen for User2/User3).
 
 ---
 
-## Important Note
+## Student Submission Checklist (Lab 3)
 
-> Submissions that do not follow the specified branch name, notebook naming convention, or sampler usage rules may not be evaluated.
+Before submitting, ensure **all items below are completed**.
+
+### Repository and branching
+- [x] Repository on GitHub; work on branch `firstname_U20230xxx` (e.g. `arsalaan_U20230064`).
+- [x] No work pushed to `master`.
+
+### Notebook
+- [x] One notebook at repo root: `lab3_results_<roll_number>.ipynb`.
+- [x] Runs top to bottom without errors; all outputs (plots, metrics) visible.
+
+### Sampler
+- [x] Use `rlcmab_sampler` as provided; initialize with roll number; rewards only via `sampler.sample(j)`.
+
+### Contextual bandit
+- [x] Context = user category; arm = news category; arm mapping as in handout.
+- [ ] All three algorithms implemented: Epsilon-Greedy, UCB, SoftMax.
+
+### Evaluation and plots
+- [x] Classification reported on validation split; T = 10,000 steps; plots: Average Reward vs Time (per context), hyperparameter comparison; axes, legend, title on every plot.
+
+> Submissions that do not follow branch name, notebook naming, or sampler usage may not be evaluated.
